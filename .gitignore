@@ -1,5 +1,7 @@
 # Build output
-/target/
+/build/*
+!/build/.gitkeep
+/dist/
 
 # IDE files
 /.idea/
