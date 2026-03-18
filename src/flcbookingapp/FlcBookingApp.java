@@ -30,8 +30,10 @@ public class FlcBookingApp {
                         attendLesson(scanner);
                         break;
                     case "4":
+                        printLessonReport();
+                        break;
                     case "5":
-                        System.out.println("Coming soon.");
+                        printChampionReport();
                         break;
                     case "6":
                         running = false;
@@ -241,6 +243,98 @@ public class FlcBookingApp {
         booking.setReview(review);
 
         System.out.println("Attendance recorded and review submitted.");
+    }
+
+    private static void printLessonReport() {
+        System.out.println();
+        System.out.println("=== Monthly Lesson Report ===");
+        for (Lesson lesson : lessons) {
+            int attendance = 0;
+            int ratingSum = 0;
+            int ratingCount = 0;
+
+            for (Booking booking : bookings) {
+                boolean sameLesson = booking.getLesson() != null
+                        && booking.getLesson().getLessonId().equalsIgnoreCase(lesson.getLessonId());
+                boolean attended = booking.getStatus() != null
+                        && booking.getStatus().equalsIgnoreCase("attended");
+                if (sameLesson && attended) {
+                    attendance++;
+                    Review review = booking.getReview();
+                    if (review != null) {
+                        ratingSum += review.getRating();
+                        ratingCount++;
+                    }
+                }
+            }
+
+            double averageRating = ratingCount > 0 ? (double) ratingSum / ratingCount : 0.0;
+            System.out.printf(
+                    "%s | %s | %s | %s | Attended: %d | Avg Rating: %.2f%n",
+                    lesson.getLessonId(),
+                    lesson.getExerciseType(),
+                    lesson.getDay(),
+                    lesson.getTimeSlot(),
+                    attendance,
+                    averageRating
+            );
+        }
+    }
+
+    private static void printChampionReport() {
+        double yogaIncome = 0.0;
+        double zumbaIncome = 0.0;
+        double aquaciseIncome = 0.0;
+        double boxFitIncome = 0.0;
+
+        for (Booking booking : bookings) {
+            boolean attended = booking.getStatus() != null
+                    && booking.getStatus().equalsIgnoreCase("attended");
+            Lesson lesson = booking.getLesson();
+            if (!attended || lesson == null) {
+                continue;
+            }
+
+            String type = lesson.getExerciseType();
+            double price = lesson.getPrice();
+            if (type == null) {
+                continue;
+            }
+
+            if (type.equalsIgnoreCase("Yoga")) {
+                yogaIncome += price;
+            } else if (type.equalsIgnoreCase("Zumba")) {
+                zumbaIncome += price;
+            } else if (type.equalsIgnoreCase("Aquacise")) {
+                aquaciseIncome += price;
+            } else if (type.equalsIgnoreCase("Box Fit")) {
+                boxFitIncome += price;
+            }
+        }
+
+        String champion = "Yoga";
+        double maxIncome = yogaIncome;
+
+        if (zumbaIncome > maxIncome) {
+            champion = "Zumba";
+            maxIncome = zumbaIncome;
+        }
+        if (aquaciseIncome > maxIncome) {
+            champion = "Aquacise";
+            maxIncome = aquaciseIncome;
+        }
+        if (boxFitIncome > maxIncome) {
+            champion = "Box Fit";
+            maxIncome = boxFitIncome;
+        }
+
+        System.out.println();
+        System.out.println("=== Monthly Champion Lesson Type Report ===");
+        System.out.printf("Yoga: £%.2f%n", yogaIncome);
+        System.out.printf("Zumba: £%.2f%n", zumbaIncome);
+        System.out.printf("Aquacise: £%.2f%n", aquaciseIncome);
+        System.out.printf("Box Fit: £%.2f%n", boxFitIncome);
+        System.out.printf("Champion: %s with £%.2f%n", champion, maxIncome);
     }
 
     private static Member findMemberById(String memberId) {
