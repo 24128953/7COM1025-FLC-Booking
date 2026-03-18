@@ -12,6 +12,7 @@ public class FlcBookingApp {
     public static void main(String[] args) {
         initializeData();
         System.out.println("System Initialized with " + lessons.size() + " lessons and " + members.size() + " members.");
+        printMemberList();
 
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;
@@ -36,10 +37,13 @@ public class FlcBookingApp {
                         printChampionReport();
                         break;
                     case "6":
+                        registerMember(scanner);
+                        break;
+                    case "7":
                         running = false;
                         break;
                     default:
-                        System.out.println("Invalid option. Please select 1 to 6.");
+                        System.out.println("Invalid option. Please select 1 to 7.");
                         break;
                 }
             }
@@ -54,7 +58,8 @@ public class FlcBookingApp {
         System.out.println("3. Attend a lesson");
         System.out.println("4. Monthly lesson report");
         System.out.println("5. Monthly champion lesson type report");
-        System.out.println("6. Exit");
+        System.out.println("6. Register a new member");
+        System.out.println("7. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -337,6 +342,21 @@ public class FlcBookingApp {
         System.out.printf("Champion: %s with £%.2f%n", champion, maxIncome);
     }
 
+    private static void registerMember(Scanner scanner) {
+        System.out.print("Enter member name: ");
+        String name = scanner.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("Name cannot be empty.");
+            return;
+        }
+
+        String memberId = generateMemberId();
+        Member newMember = new Member(memberId, name);
+        members.add(newMember);
+
+        System.out.println("Member registered. ID: " + memberId);
+    }
+
     private static Member findMemberById(String memberId) {
         for (Member member : members) {
             if (member.getMemberId().equalsIgnoreCase(memberId)) {
@@ -368,6 +388,33 @@ public class FlcBookingApp {
         return "booked".equalsIgnoreCase(status)
                 || "attended".equalsIgnoreCase(status)
                 || "changed".equalsIgnoreCase(status);
+    }
+
+    private static String generateMemberId() {
+        int max = 0;
+        for (Member member : members) {
+            String id = member.getMemberId();
+            if (id == null || !id.startsWith("M")) {
+                continue;
+            }
+            String numericPart = id.substring(1);
+            try {
+                int value = Integer.parseInt(numericPart);
+                if (value > max) {
+                    max = value;
+                }
+            } catch (NumberFormatException ignored) {
+                // Ignore non-numeric ids
+            }
+        }
+        return String.format("M%02d", max + 1);
+    }
+
+    private static void printMemberList() {
+        System.out.println("Available Members:");
+        for (Member member : members) {
+            System.out.println(member.getMemberId() + " - " + member.getName());
+        }
     }
 
     public static boolean isDuplicate(Member member, Lesson lesson, List<Booking> bookings) {

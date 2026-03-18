@@ -1,15 +1,23 @@
 # Build output
-/build/*
-!/build/.gitkeep
+/build/
 /dist/
+/nbbuild/
+/nbdist/
+/out/
+*.class
+*.jar
 
 # IDE files
 /.idea/
 *.iml
 /.vscode/
+.classpath
+.project
+.settings/
 
 # NetBeans files
-/nbproject/private/
+/nbproject/
+/.nb-gradle/
 
 # OS files
 .DS_Store
