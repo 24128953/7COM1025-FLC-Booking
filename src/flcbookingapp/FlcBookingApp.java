@@ -370,6 +370,34 @@ public class FlcBookingApp {
                 || "changed".equalsIgnoreCase(status);
     }
 
+    public static boolean isDuplicate(Member member, Lesson lesson, List<Booking> bookings) {
+        if (member == null || lesson == null || bookings == null) {
+            return false;
+        }
+        for (Booking booking : bookings) {
+            if (booking == null) {
+                continue;
+            }
+            Member bookingMember = booking.getMember();
+            Lesson bookingLesson = booking.getLesson();
+            String status = booking.getStatus();
+            boolean sameMember = bookingMember != null
+                    && bookingMember.getMemberId().equalsIgnoreCase(member.getMemberId());
+            boolean sameLesson = bookingLesson != null
+                    && bookingLesson.getLessonId().equalsIgnoreCase(lesson.getLessonId());
+            boolean notCancelled = status == null || !status.equalsIgnoreCase("cancelled");
+
+            if (sameMember && sameLesson && notCancelled) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static double calculateTotalIncome(int attendanceCount, double price) {
+        return attendanceCount * price;
+    }
+
     private static void printLesson(Lesson lesson) {
         System.out.println(
                 lesson.getLessonId() + " | "

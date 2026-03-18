@@ -27,4 +27,8 @@ public class Review {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    public static boolean isValidRating(int rating) {
+        return rating >= 1 && rating <= 5;
+    }
 }

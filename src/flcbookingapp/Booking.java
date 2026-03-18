@@ -63,4 +63,8 @@ public class Booking {
     public void setReview(Review review) {
         this.review = review;
     }
+
+    public boolean canBeAttended() {
+        return "booked".equalsIgnoreCase(status) || "changed".equalsIgnoreCase(status);
+    }
 }

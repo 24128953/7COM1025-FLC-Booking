@@ -66,4 +66,8 @@ public class Lesson {
     public void setMaxCapacity(int maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
+
+    public boolean hasAvailableSpace(int currentBookings) {
+        return currentBookings < maxCapacity;
+    }
 }
