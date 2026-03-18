@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="FlcBookingApp" default="default" basedir=".">
-    <description>Scaffold build file for FlcBookingApp.</description>
-    <target name="default"/>
+<project name="FlcBookingApp" default="jar" basedir=".">
+    <description>Builds and packages the FlcBookingApp jar.</description>
+
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="manifest.file" value="manifest.mf"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/FlcBookingApp.jar" basedir="${classes.dir}" manifest="${manifest.file}"/>
+    </target>
 </project>
