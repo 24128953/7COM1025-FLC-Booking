@@ -27,6 +27,8 @@ public class FlcBookingApp {
                         changeOrCancelBooking(scanner);
                         break;
                     case "3":
+                        attendLesson(scanner);
+                        break;
                     case "4":
                     case "5":
                         System.out.println("Coming soon.");
@@ -200,6 +202,45 @@ public class FlcBookingApp {
         booking.setLesson(newLesson);
         booking.setStatus("changed");
         System.out.println("Booking changed successfully. Old place released and new booking confirmed.");
+    }
+
+    private static void attendLesson(Scanner scanner) {
+        System.out.print("Enter Booking ID: ");
+        String bookingId = scanner.nextLine().trim();
+        Booking booking = findBookingById(bookingId);
+        if (booking == null) {
+            System.out.println("Booking not found.");
+            return;
+        }
+
+        String status = booking.getStatus();
+        if (status == null || status.equalsIgnoreCase("cancelled") || status.equalsIgnoreCase("attended")) {
+            System.out.println("Cannot attend this booking.");
+            return;
+        }
+
+        booking.setStatus("attended");
+
+        int rating = 0;
+        while (rating < 1 || rating > 5) {
+            System.out.print("Enter rating (1-5): ");
+            String ratingInput = scanner.nextLine().trim();
+            try {
+                rating = Integer.parseInt(ratingInput);
+            } catch (NumberFormatException e) {
+                rating = 0;
+            }
+            if (rating < 1 || rating > 5) {
+                System.out.println("Invalid rating. Please enter a number between 1 and 5.");
+            }
+        }
+
+        System.out.print("Enter review comment: ");
+        String comment = scanner.nextLine().trim();
+        Review review = new Review(rating, comment);
+        booking.setReview(review);
+
+        System.out.println("Attendance recorded and review submitted.");
     }
 
     private static Member findMemberById(String memberId) {
