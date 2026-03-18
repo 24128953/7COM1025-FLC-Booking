@@ -24,6 +24,8 @@ public class FlcBookingApp {
                         bookLesson(scanner);
                         break;
                     case "2":
+                        changeOrCancelBooking(scanner);
+                        break;
                     case "3":
                     case "4":
                     case "5":
@@ -140,6 +142,66 @@ public class FlcBookingApp {
         System.out.println("Booking successful. Booking ID: " + newBookingId);
     }
 
+    private static void changeOrCancelBooking(Scanner scanner) {
+        System.out.print("Enter Booking ID: ");
+        String bookingId = scanner.nextLine().trim();
+        Booking booking = findBookingById(bookingId);
+        if (booking == null) {
+            System.out.println("Booking not found.");
+            return;
+        }
+
+        String status = booking.getStatus();
+        if (status == null || status.equalsIgnoreCase("cancelled") || status.equalsIgnoreCase("attended")) {
+            System.out.println("Cannot change or cancel this booking.");
+            return;
+        }
+
+        System.out.println("Select action:");
+        System.out.println("1. Change");
+        System.out.println("2. Cancel");
+        System.out.print("Enter option: ");
+        String action = scanner.nextLine().trim();
+
+        if ("2".equals(action)) {
+            booking.setStatus("cancelled");
+            System.out.println("Booking cancelled successfully.");
+            return;
+        }
+
+        if (!"1".equals(action)) {
+            System.out.println("Invalid action.");
+            return;
+        }
+
+        System.out.print("Enter new lessonId: ");
+        String newLessonId = scanner.nextLine().trim();
+        Lesson newLesson = findLessonById(newLessonId);
+        if (newLesson == null) {
+            System.out.println("Lesson not found.");
+            return;
+        }
+
+        int activeBookingsForLesson = 0;
+        for (Booking existingBooking : bookings) {
+            boolean sameLesson = existingBooking.getLesson() != null
+                    && existingBooking.getLesson().getLessonId().equalsIgnoreCase(newLesson.getLessonId());
+            boolean activeStatus = isActiveStatus(existingBooking.getStatus());
+            if (sameLesson && activeStatus) {
+                activeBookingsForLesson++;
+            }
+        }
+
+        if (activeBookingsForLesson >= 4) {
+            System.out.println("Change rejected: lesson is over capacity.");
+            return;
+        }
+
+        booking.setLesson(newLesson);
+        booking.setStatus("changed");
+        System.out.println("Booking changed successfully. Old place released and new booking confirmed.");
+    }
+
     private static Member findMemberById(String memberId) {
         for (Member member : members) {
             if (member.getMemberId().equalsIgnoreCase(memberId)) {
@@ -153,6 +215,15 @@ public class FlcBookingApp {
         for (Lesson lesson : lessons) {
             if (lesson.getLessonId().equalsIgnoreCase(lessonId)) {
                 return lesson;
+            }
+        }
+        return null;
+    }
+
+    private static Booking findBookingById(String bookingId) {
+        for (Booking booking : bookings) {
+            if (booking.getBookingId().equalsIgnoreCase(bookingId)) {
+                return booking;
             }
         }
         return null;
